@@ -1,5 +1,6 @@
 import os
 import modules.path
+import json
 
 from PIL import Image
 from PIL.PngImagePlugin import PngInfo
@@ -55,6 +56,23 @@ def log(img, dic, single_line_number=3, metadata=None, save_metadata_json=False,
             i += 1
         f.write(f"<p><img src=\"{only_name}\" width=512 onerror=\"document.getElementById('{div_name}').style.display = 'none';\"></img></p></div>\n")
 
+        all_json_name = os.path.join(os.path.dirname(local_temp_filename), 'all.json')
+
+        if not os.path.exists(all_json_name):
+            with open(all_json_name, 'w', encoding='utf-8') as f:
+                f.write('{"data": []}')
+
+        with open(all_json_name, 'r', encoding='utf-8') as f:
+            all_json = json.load(f)
+
+        new_data = {
+            "src": only_name,
+        }
+        new_data.update(dic)
+        all_json["data"].append(new_data)
+        with open(all_json_name, 'w', encoding='utf-8') as f:
+            json.dump(all_json, f)
+    
     print(f'Image generated with private log at: {html_name}')
 
     return
